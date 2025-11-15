@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calfy — PDF to Story</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="app theme-light" data-stage="idle">
+    <div class="app-shell">
+        <header class="top-bar" role="banner">
+            <button id="settings-trigger" class="tool-button settings-trigger" type="button" aria-controls="settings-sheet" aria-expanded="false" aria-haspopup="true">
+                <span class="sr-only">Open settings</span>
+                <span class="settings-icon" aria-hidden="true">
+                    <svg class="settings-icon-gear" viewBox="0 0 24 24" role="presentation">
+                        <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a6.9 6.9 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.6.24-1.14.55-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.7 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.5 7.5 0 0 0 0 1.88L2.82 14.68a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.43.34.68.22l2.39-.96c.48.39 1.02.7 1.62.94l.36 2.54c.04.25.25.42.5.42h3.84c.25 0 .46-.18.5-.42l.36-2.54c.6-.24 1.14-.55 1.62-.94l2.39.96c.25.1.54 0 .68-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z" />
+                    </svg>
+                </span>
+            </button>
+            <div class="brand">
+                <span class="brand-name">Calfy</span>
+            </div>
+            <button id="new-tab-trigger" class="tool-button tool-button-plus" type="button">
+                <span class="sr-only">New session</span>
+                <span class="icon-plus" aria-hidden="true"></span>
+            </button>
+        </header>
+
+        <main class="main-stage" role="main">
+            <section class="import-card" aria-labelledby="import-title">
+                <header class="card-header">
+                    <div>
+                        <h2 id="import-title">Import your PDF</h2>
+                        <p class="card-subtitle">Drop your document and we’ll take it from there.</p>
+                    </div>
+                </header>
+                <label id="dropzone" class="import-drop" for="file-input" role="button" tabindex="0" aria-controls="file-input">
+                    <span class="import-title" data-empty-title="Import your PDF" data-loaded-title="Change PDF">Import your PDF</span>
+                    <span class="import-subtitle" id="drop-hint">Tap to choose or drop a file</span>
+                    <input id="file-input" type="file" accept="application/pdf,.pdf" hidden>
+                </label>
+                <div id="file-summary" class="file-summary" hidden>
+                    <p class="file-name" id="file-name">No file selected</p>
+                    <p class="file-meta" id="file-meta"></p>
+                </div>
+                <button id="render-start" class="start-button" type="button" disabled>
+                    <span class="text-button">Start rendering</span>
+                </button>
+            </section>
+
+            <section class="hero-block" aria-live="polite">
+                <div class="hero-logo" aria-hidden="true">
+                    <img src="Calfy_icon.svg" alt="" class="mascot-logo">
+                </div>
+                <p class="stage-hint" id="stage-hint">Upload a PDF to begin.</p>
+            </section>
+
+            <section id="process-card" class="process-card" aria-live="polite">
+                <div id="progress-info" class="progress-info" hidden>
+                    <ul id="progress-steps" class="progress-list">
+                        <li data-step="pdf" class="pending">PDF parsing</li>
+                        <li data-step="analysis" class="pending">Story synthesis</li>
+                        <li data-step="assets" class="pending">Asset generation</li>
+                        <li data-step="assembly" class="pending">Video assembly</li>
+                    </ul>
+                </div>
+                <div id="render-loader" class="render-loader" hidden aria-live="assertive">
+                    <div class="loader-wrapper" aria-hidden="true">
+                        <span class="loader-letter">G</span>
+                        <span class="loader-letter">e</span>
+                        <span class="loader-letter">n</span>
+                        <span class="loader-letter">e</span>
+                        <span class="loader-letter">r</span>
+                        <span class="loader-letter">a</span>
+                        <span class="loader-letter">t</span>
+                        <span class="loader-letter">i</span>
+                        <span class="loader-letter">n</span>
+                        <span class="loader-letter">g</span>
+                        <div class="loader"></div>
+                    </div>
+                    <p class="loader-caption">Generating your story...</p>
+                </div>
+            </section>
+
+            <section class="preference-block" aria-label="Preference controls">
+                <header class="card-header">
+                    <div>
+                        <h2>! Choose your preferences</h2>
+                    </div>
+                </header>
+                <div class="preference-grid">
+                    <div class="preference-standard">
+                        <label class="checkbox-wrapper" data-preference="osmosis">
+                            <input type="checkbox" data-preference-input="osmosis">
+                            <div class="checkmark">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20 6L9 17L4 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <span class="label">Osmosis Learning</span>
+                        </label>
+                        <label class="checkbox-wrapper" data-preference="voice-off">
+                            <input type="checkbox" data-preference-input="voice-off">
+                            <div class="checkmark">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20 6L9 17L4 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <span class="label">Without Voice-over</span>
+                        </label>
+                        <label class="checkbox-wrapper" data-preference="orientation-landscape">
+                            <input type="checkbox" data-preference-input="orientation-landscape" checked>
+                            <div class="checkmark">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20 6L9 17L4 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <span class="label">Horizontal</span>
+                        </label>
+                        <label class="checkbox-wrapper" data-preference="orientation-portrait">
+                            <input type="checkbox" data-preference-input="orientation-portrait">
+                            <div class="checkmark">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M20 6L9 17L4 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <span class="label">Vertical</span>
+                        </label>
+                    </div>
+                    <div class="preference-premium">
+                        <button type="button" class="premium-button" data-premium="video-styles" aria-pressed="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24" aria-hidden="true">
+                                <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"></path>
+                            </svg>
+                            Video styles
+                        </button>
+                        <button type="button" class="premium-button" data-premium="voice" aria-pressed="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 24" aria-hidden="true">
+                                <path d="m18 0 8 12 10-8-4 20H4L0 4l10 8 8-12z"></path>
+                            </svg>
+                            With Voice-over
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="export-hub" class="export-hub" aria-live="polite">
+                <header class="card-header">
+                    <div>
+                        <h2>Export story</h2>
+                        <p class="card-subtitle">Save to your device using the native file picker.</p>
+                    </div>
+                </header>
+                <div class="export-picker" role="group" aria-label="Export format">
+                    <button type="button" class="export-option" data-format="video" aria-pressed="true">Video</button>
+                    <button type="button" class="export-option" data-format="pdf" aria-pressed="false">PDF</button>
+                    <button type="button" class="export-option" data-format="ppt" aria-pressed="false" data-disabled="true">PPT</button>
+                </div>
+                <div class="export-actions">
+                    <div class="download-control">
+                        <button id="export-video" class="download-trigger" type="button" data-state="idle">
+                            <span class="download-circle" aria-hidden="true">
+                                <span class="download-circle-progress"></span>
+                                <svg class="download-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19V5m0 14-4-4m4 4 4-4"></path>
+                                </svg>
+                                <span class="download-square" aria-hidden="true"></span>
+                            </span>
+                            <span class="download-title download-title-idle">Download</span>
+                            <span class="download-title download-title-complete">Open</span>
+                        </button>
+                    </div>
+                    <button id="preview-button" class="secondary-action" type="button">Preview</button>
+                </div>
+            </section>
+
+            <canvas id="export-canvas" width="1920" height="1080" aria-hidden="true"></canvas>
+        </main>
+    </div>
+
+    <aside id="settings-sheet" class="settings-sheet" aria-hidden="true" role="dialog" aria-label="Calfy settings">
+        <div class="settings-card">
+            <header class="settings-header">
+                <h2>Quick actions</h2>
+                <button type="button" class="icon-button" id="close-settings">
+                    <span class="sr-only">Close settings</span>
+                    <span class="icon-close" aria-hidden="true"></span>
+                </button>
+            </header>
+            <nav class="settings-menu" aria-label="Settings options">
+                <button type="button" class="settings-item" data-action="create-account">Create Account for Free credits</button>
+                <a href="#" class="settings-item" data-action="privacy">Privacy Policy</a>
+                <button type="button" class="settings-item" data-action="share">Share with your friends</button>
+                <button type="button" class="settings-item" data-action="follow">Follow us for more features</button>
+            </nav>
+            <div class="settings-section">
+                <p class="settings-label">Extras</p>
+                <div class="settings-group">
+                    <label class="settings-field" for="csv-input">Import CSV</label>
+                    <input id="csv-input" type="file" accept="text/csv" hidden>
+                    <label class="settings-field" for="json-input">Import JSON</label>
+                    <input id="json-input" type="file" accept="application/json" hidden>
+                    <label class="settings-field" for="longcat-key">Longcat API key</label>
+                    <input type="password" id="longcat-key" placeholder="ak_1Co58b18G06O1Av6hD1X43Gw00k5J" autocomplete="off">
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <section id="preview-modal" class="preview-modal" aria-hidden="true" role="dialog" aria-label="Preview story">
+        <div class="preview-card">
+            <header class="preview-header">
+                <h2>Preview your story</h2>
+                <button type="button" class="icon-button" id="close-preview">
+                    <span class="sr-only">Close preview</span>
+                    <span class="icon-close" aria-hidden="true"></span>
+                </button>
+            </header>
+            <div class="preview-content">
+                <div id="preview-carousel" class="preview-carousel" aria-live="polite"></div>
+                <div class="slide-editor">
+                    <div id="chart-help" class="info-banner" role="note" hidden>
+                        <strong>Why this chart?</strong>
+                        <p id="chart-help-text"></p>
+                    </div>
+                    <div id="slide-list" class="slide-list" role="list" aria-live="polite"></div>
+                </div>
+            </div>
+            <footer class="preview-footer">
+                <div class="audio-controls" role="group" aria-label="Voiceover">
+                    <button id="tts-toggle" class="pill" type="button">Preview Voice-over</button>
+                    <button id="tts-stop" class="pill pill-secondary" type="button">Stop</button>
+                    <label class="tts-option">
+                        <input type="checkbox" id="silent-mode">
+                        Silent export
+                    </label>
+                    <label class="tts-option">
+                        Voice
+                        <select id="voice-select" aria-label="TTS voice"></select>
+                    </label>
+                </div>
+                <button id="preview-save" class="preview-save" type="button">Save &amp; Export Video</button>
+            </footer>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js" referrerpolicy="no-referrer"></script>
+    <script>
+            if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+            }
+    </script>
+    <script>
+        document.addEventListener('touchmove', event => {
+            if (event.touches && event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
